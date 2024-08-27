@@ -16,7 +16,6 @@ void   createCpp(std::string className)
 	file << className << "::" << className << "(const " << className << "& constrCopy)\n{\n\n}";	//Copy constructor
 	file << className << "& " << className << "::operator=(const " << className << "& constrCopy)\n";	//Assigned operator
 	file << "{\n    if (this != &constrCopy)\n    {\n\n    }\n\n    return (*this);\n}\n";
-
 } 
 
 std::string	createClassHpp()
