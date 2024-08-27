@@ -18,13 +18,8 @@ void   createCpp(std::string className)
 	file << "{\n    if (this != &constrCopy)\n    {\n\n    }\n\n    return (*this);\n}\n";
 } 
 
-std::string	createClassHpp()
+std::string	createClassHpp(std::string className)
 {
-    std::string className;
-    std::cout << "Enter the class name: ";
-    std::cin >> className;
-
-    // Convertir className a mayúsculas
     std::string classNameUpper = className;
     std::transform(classNameUpper.begin(), classNameUpper.end(), classNameUpper.begin(), ::toupper);
 
@@ -58,7 +53,10 @@ int main()
 {
     std::string className;
 
-    className = createClassHpp();
+    std::cout << "Enter the class name: ";
+    std::cin >> className;
+
+    createClassHpp(className);
     createCpp(className);
     return (0);
 }
