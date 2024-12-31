@@ -94,45 +94,9 @@ void   createClassCpp(std::string className)
 	file << className << "::" << "~" << className << "()\n" << "{\n" << "}\n";	//Destructor
 } 
 
-void	createMakefile(std::string className)
-{
-    std::ofstream file("../../Makefile");
-
-    if (!file)
-    {
-        std::cerr << "Error creating Makefile!" << std::endl;
-        return;
-    }
-
-    file << "NAME = a.out\n";
-    file << "CC = c++\n";
-    file << "CFLAGS = -Wall -Wextra -Werror -std=c++98\n";
-    file << "SRCS = srcs/main.cpp srcs/" << className << ".cpp\n";  // Usar el nombre de la clase
-    file << "DEBUG = -g3 -fsanitize=address\n";
-    file << "OBJS = $(SRCS:srcs/%.cpp=objs/%.o)\n\n";
-    file << "# Construction of the executable and update obj if necessary\n";
-    file << "$(NAME): objs $(OBJS)\n";
-    file << "\t$(CC) $(CFLAGS) $(DEBUG) $(OBJS) -o $(NAME)\n\n";
-    file << "all: $(NAME)\n\n";
-    file << "# Construction of object files (.o) from source files (.cpp)\n";
-    file << "objs/%.o: srcs/%.cpp\n";
-    file << "\t@$(CC) $(CFLAGS) -c $< -o $@\n\n";
-    file << "objs:\n";
-    file << "\t@mkdir -p objs/\n\n";
-    file << "clean:\n";
-    file << "\t@rm -rf objs\n\n";
-    file << "fclean: clean\n";
-    file << "\t@rm -f $(NAME)\n\n";
-    file << "re: fclean all\n\n";
-    file << ".PHONY: all clean fclean re\n";
-
-    file.close();
-}
-
 void createColorsHpp(std::string className)
 {
     std::ofstream file("../../include/Colors.hpp");
-
     if (!file)
     {
         std::cerr << "Error creating Colors.hpp!" << std::endl;
@@ -201,12 +165,94 @@ void createColorsHpp(std::string className)
     file.close();
 }
 
+int questionCreateSomeFile(std::string param)
+{
+    std::string input;
+    int         flag;
+
+    flag = 0;
+    while (1)
+    {
+        std::cout << "Do you want the script to create a "<< param << "? yes/not" << std::endl;
+        std::cin >> input;
+        if (input == "yes" || input == "y")
+        {
+            flag = 1;
+            return (flag);
+        }
+        else if (input == "not" || input == "n")
+            return (flag);
+    }
+}
+
+void	createMakefile(std::string className)
+{
+    int flag;
+    flag = questionCreateSomeFile("Makefile");
+
+    if (flag == 1)
+    {
+        std::ofstream file("../../Makefile");
+        if (!file)
+        {
+            std::cerr << "Error creating Makefile!" << std::endl;
+            return;
+        }
+
+        file << "NAME = a.out\n";
+        file << "CC = c++\n";
+        file << "CFLAGS = -Wall -Wextra -Werror -std=c++98\n";
+        file << "SRCS = srcs/main.cpp srcs/" << className << ".cpp\n";  // Usar el nombre de la clase
+        file << "DEBUG = -g3 -fsanitize=address\n";
+        file << "OBJS = $(SRCS:srcs/%.cpp=objs/%.o)\n\n";
+        file << "# Construction of the executable and update obj if necessary\n";
+        file << "$(NAME): objs $(OBJS)\n";
+        file << "\t$(CC) $(CFLAGS) $(DEBUG) $(OBJS) -o $(NAME)\n\n";
+        file << "all: $(NAME)\n\n";
+        file << "# Construction of object files (.o) from source files (.cpp)\n";
+        file << "objs/%.o: srcs/%.cpp\n";
+        file << "\t@$(CC) $(CFLAGS) -c $< -o $@\n\n";
+        file << "objs:\n";
+        file << "\t@mkdir -p objs/\n\n";
+        file << "clean:\n";
+        file << "\t@rm -rf objs\n\n";
+        file << "fclean: clean\n";
+        file << "\t@rm -f $(NAME)\n\n";
+        file << "re: fclean all\n\n";
+        file << ".PHONY: all clean fclean re\n";
+
+        file.close();
+    }
+}
+
+void    createMainCpp(std::string className)
+{
+    int flag;
+    flag = questionCreateSomeFile("main.cpp");
+
+    if (flag == 1)
+    {
+        std::ofstream file("../../srcs/main.cpp");
+        if (!file)
+        {
+            std::cerr << "Error creating main.cpp!" << std::endl;
+            return;
+        }
+
+        file << "#include \"../include/" << className << ".hpp\"\n\n";
+        file << "int main()\n{\n\n";
+        file << "    return (0);\n";
+        file << "}\n";
+    }
+}
+
 int main()
 {
 	std::string className;
 	std::string classesNumber;
 	int i;
 
+    i = 0;
 	classesNumber = howManyClasses();
 
 	while (i < std::stoi(classesNumber))
@@ -215,9 +261,11 @@ int main()
 		std::cin >> className;
 		createClassHpp(className);
 		createClassCpp(className);
-		createMakefile(className);
 		createColorsHpp(className);
-		std::cout << "File " << className << ".hpp, " << className << ".cpp and Makefile created successfully!" << std::endl;
+		createMakefile(className);
+        createMainCpp(className);
+		std::cout << "File " << className << ".hpp, " << className << ".cpp and Colors.hpp created successfully!" << std::endl;
+        std::cout << "Makefile and main.cpp, depends on your choice" << std::endl;
 		i++;
 	}
 
